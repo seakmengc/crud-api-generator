@@ -74,8 +74,8 @@ class MakeCrudApi extends Command
     {
         $modelDir = substr(str_replace('/', '\\', $this->dir), 0, -1);
         $content = str_replace(
-            ['{{modelDir}}', '{{modelName}}'],
-            [$modelDir, $this->name],
+            ['{{modelDir}}', '{{modelName}}', '{{fillables}}'],
+            [$modelDir, $this->name, $this->getAllFillableFields()],
             file_get_contents($this->stubsPath . 'Model.stub')
         );
 
@@ -159,6 +159,17 @@ class MakeCrudApi extends Command
             mkdir($fullDirPath, 0777, true);
 
         file_put_contents($fullDirPath . $this->name . '.php', $content);
+    }
+
+    private function getAllFillableFields()
+    {
+        $format = '';
+        foreach ($this->tableInfo as $column) {
+            if (!in_array($column->Field, ['id', 'created_at', 'updated_at', 'deleted_at']))
+                $format .= "'$column->Field',";
+        }
+
+        return $format;
     }
 
     private function getAllResourceColumns(): string
