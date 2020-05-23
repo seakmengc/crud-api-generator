@@ -21,7 +21,7 @@ class CrudApiGeneratorServiceProvider extends ServiceProvider
 
         $this->publishes([
             __DIR__ . '/resources' => resource_path(),
-        ]);
+        ], 'resource');
     }
 
     public function register()
