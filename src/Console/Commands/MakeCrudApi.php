@@ -14,7 +14,7 @@ class MakeCrudApi extends Command
      *
      * @var string
      */
-    protected $signature = 'make:crud-api {name} {--options=a : m=Model,c=Controller,r=Resource,f=FormRequest,a=All}';
+    protected $signature = 'make:crud-api {name} {--options=a : m=Model, c=Controller, r=Resource, f=FormRequest, p=Policy, a=All}';
 
     /**
      * The console command description.
@@ -81,7 +81,7 @@ class MakeCrudApi extends Command
 
         $dir = config('crud-api.model_basepath') . $this->dir;
 
-        $this->generate($dir, $content);
+        $this->generate($dir, $content, 'Model');
 
         $this->line("<fg=green>Model generated:\n{$dir}{$this->name}.php</>\n");
     }
@@ -97,7 +97,7 @@ class MakeCrudApi extends Command
 
         $dir = config('crud-api.controller_basepath') . $this->dir;
 
-        $this->generate($dir, $content);
+        $this->generate($dir, $content, 'Controller');
 
         $this->line("<fg=green>Controller generated:\n{$dir}{$this->name}.php</>\n");
     }
@@ -129,7 +129,7 @@ class MakeCrudApi extends Command
 
         $dir = config('crud-api.request_basepath') . $this->dir;
 
-        $this->generate($dir, $content);
+        $this->generate($dir, $content, 'Request');
 
         $this->line("<fg=green>Form request generated:\n{$dir}{$this->name}.php</>\n");
     }
@@ -145,12 +145,12 @@ class MakeCrudApi extends Command
 
         $dir = config('crud-api.resource_basepath') . $this->dir;
 
-        $this->generate($dir, $content);
+        $this->generate($dir, $content, 'Resource');
 
         $this->line("<fg=green>Resource generated:\n{$dir}{$this->name}.php</>\n");
     }
 
-    private function generate($fullDirPath, $content)
+    private function generate($fullDirPath, $content, $append)
     {
         if (file_exists($fullDirPath . $this->name . '.php'))
             throw new FileExistsException();
@@ -158,7 +158,7 @@ class MakeCrudApi extends Command
         if (!file_exists($fullDirPath))
             mkdir($fullDirPath, 0777, true);
 
-        file_put_contents($fullDirPath . $this->name . '.php', $content);
+        file_put_contents($fullDirPath . $this->name . $append . '.php', $content);
     }
 
     private function getAllFillableFields()
