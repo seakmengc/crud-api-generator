@@ -37,7 +37,7 @@ class MakeCrudApi extends Command
     {
         parent::__construct();
 
-        $this->stubsPath = app_path('Console/Commands/stubs/crud/');
+        $this->stubsPath = resource_path('stubs/crud/');
 
         DB::connection()->getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
     }
