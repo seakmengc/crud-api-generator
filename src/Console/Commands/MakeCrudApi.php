@@ -113,7 +113,7 @@ class MakeCrudApi extends Command
 
         $dir = config('crud-api.policy_basepath') . $this->dir;
 
-        $this->generate($dir, $content);
+        $this->generate($dir, $content, 'Policy');
 
         $this->line("<fg=green>Policy generated:\n{$dir}{$this->name}.php</>\n");
     }
