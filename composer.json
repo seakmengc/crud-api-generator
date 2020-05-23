@@ -1,0 +1,21 @@
+{
+    "name": "schheang/crud-api-generator",
+    "description": "Generator crud api",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "SeakmengChheang",
+            "email": "c.seakmeng0603@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Schheang\\CrudApiGenerator\\CrudApiGeneratorServiceProvider"
+            ]
+        }
+    }
+}
