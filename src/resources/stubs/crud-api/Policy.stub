@@ -18,32 +18,32 @@ class {{modelName}}Policy
 
     public function viewAny(User $user)
     {
-        return $this->determine($user, ${{modelCamelCaseName}}, 'ViewAny');
+        return $this->determine($user, 'ViewAny');
     }
 
     public function view(User $user, {{modelName}} ${{modelCamelCaseName}})
     {
-        return $this->determine($user, ${{modelCamelCaseName}}, 'View');
+        return $this->determine($user, 'View', ${{modelCamelCaseName}});
     }
     
     public function create(User $user)
     {
-        return $this->determine($user, ${{modelCamelCaseName}}, 'Create');
+        return $this->determine($user, 'Create');
     }
 
     public function update(User $user, {{modelName}} ${{modelCamelCaseName}})
     {
-        return $this->determine($user, ${{modelCamelCaseName}}, 'Update');
+        return $this->determine($user, 'Update', ${{modelCamelCaseName}});
     }
 
     public function delete(User $user, {{modelName}} ${{modelCamelCaseName}})
     {
-        return $this->determine($user, ${{modelCamelCaseName}}, 'Delete');
+        return $this->determine($user, 'Delete', ${{modelCamelCaseName}});
     }
 
     public function restore(User $user, {{modelName}} ${{modelCamelCaseName}})
     {
-        return $this->determine($user, ${{modelCamelCaseName}}, 'Restore');
+        return $this->determine($user, 'Restore', ${{modelCamelCaseName}});
     }
 
     //Gate before will handle this case
@@ -52,7 +52,7 @@ class {{modelName}}Policy
         return false;
     }
 
-    private function determine(User $user, {{modelName}} ${{modelCamelCaseName}}, $action)
+    private function determine(User $user, $action, {{modelName}} ${{modelCamelCaseName}} = null)
     {
         if ($user->can($action . ' Any {{modelName}}'))
             return true;
