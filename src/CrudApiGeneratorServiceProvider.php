@@ -1,9 +1,9 @@
 <?php
 
-namespace Schheang\CrudApiGenerator;
+namespace Seakmengc\CrudApiGenerator;
 
 use Illuminate\Support\ServiceProvider;
-use Schheang\CrudApiGenerator\Console\Commands\MakeCrudApi;
+use Seakmengc\CrudApiGenerator\Console\Commands\MakeCrudApi;
 
 class CrudApiGeneratorServiceProvider extends ServiceProvider
 {

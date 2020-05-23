@@ -1,5 +1,5 @@
 {
-    "name": "schheang/crud-api-generator",
+    "name": "seakmengc/crud-api-generator",
     "description": "Generator crud api",
     "type": "library",
     "license": "MIT",
@@ -11,10 +11,15 @@
     ],
     "minimum-stability": "stable",
     "require": {},
+    "autoload": {
+        "psr-4": {
+            "Seakmengc\\CrudApiGenerator\\": "src/"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
-                "Schheang\\CrudApiGenerator\\CrudApiGeneratorServiceProvider"
+                "Seakmengc\\CrudApiGenerator\\CrudApiGeneratorServiceProvider"
             ]
         }
     }

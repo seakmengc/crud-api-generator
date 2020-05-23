@@ -1,6 +1,6 @@
 <?php
 
-namespace Schheang\CrudApiGenerator\Console\Commands;
+namespace Seakmengc\CrudApiGenerator\Console\Commands;
 
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
