@@ -99,7 +99,7 @@ class MakeCrudApi extends Command
 
         $this->generate($dir, $content, 'Controller');
 
-        $this->line("<fg=green>Controller generated:\n{$dir}{$this->name}.php</>\n");
+        $this->line("<fg=green>Controller generated:\n{$dir}{$this->name}Controller.php</>\n");
     }
 
     private function generatePolicy()
@@ -115,7 +115,7 @@ class MakeCrudApi extends Command
 
         $this->generate($dir, $content, 'Policy');
 
-        $this->line("<fg=green>Policy generated:\n{$dir}{$this->name}.php</>\n");
+        $this->line("<fg=green>Policy generated:\n{$dir}{$this->name}Policy.php</>\n");
     }
 
     private function generateFormRequest()
@@ -131,7 +131,7 @@ class MakeCrudApi extends Command
 
         $this->generate($dir, $content, 'Request');
 
-        $this->line("<fg=green>Form request generated:\n{$dir}{$this->name}.php</>\n");
+        $this->line("<fg=green>Form request generated:\n{$dir}{$this->name}Request.php</>\n");
     }
 
     private function generateResource()
@@ -147,7 +147,7 @@ class MakeCrudApi extends Command
 
         $this->generate($dir, $content, 'Resource');
 
-        $this->line("<fg=green>Resource generated:\n{$dir}{$this->name}.php</>\n");
+        $this->line("<fg=green>Resource generated:\n{$dir}{$this->name}Resource.php</>\n");
     }
 
     private function generate($fullDirPath, $content, $append = '')
