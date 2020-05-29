@@ -74,8 +74,8 @@ class MakeCrudApi extends Command
     {
         $modelDir = substr(str_replace('/', '\\', $this->dir), 0, -1);
         $content = str_replace(
-            ['{{modelDir}}', '{{modelName}}', '{{fillables}}'],
-            [$modelDir, $this->name, $this->getAllFillableFields()],
+            ['{{modelDir}}', '{{modelName}}', '{{fillables}}', '{{modelNamespace}}'],
+            [$modelDir, $this->name, $this->getAllFillableFields(), ucfirst(config('crud-api.model_basepath'))],
             file_get_contents($this->stubsPath . 'Model.stub')
         );
 
@@ -90,8 +90,8 @@ class MakeCrudApi extends Command
     {
         $modelDir = substr(str_replace('/', '\\', $this->dir), 0, -1);
         $content = str_replace(
-            ['{{modelName}}', '{{modelCamelCaseName}}', '{{modelDir}}'],
-            [$this->name, Str::camel($this->name), $modelDir],
+            ['{{modelName}}', '{{modelCamelCaseName}}', '{{modelDir}}', '{{modelNamespace}}'],
+            [$this->name, Str::camel($this->name), $modelDir, ucfirst(config('crud-api.controller_basepath'))],
             file_get_contents($this->stubsPath . 'Controller.stub')
         );
 
@@ -106,8 +106,8 @@ class MakeCrudApi extends Command
     {
         $modelDir = substr(str_replace('/', '\\', $this->dir), 0, -1);
         $content = str_replace(
-            ['{{modelName}}', '{{modelCamelCaseName}}', '{{modelDir}}'],
-            [$this->name, Str::camel($this->name), $modelDir],
+            ['{{modelName}}', '{{modelCamelCaseName}}', '{{modelDir}}', '{{modelNamespace}}'],
+            [$this->name, Str::camel($this->name), $modelDir, ucfirst(config('crud-api.policy_basepath'))],
             file_get_contents($this->stubsPath . 'Policy.stub')
         );
 
@@ -122,8 +122,8 @@ class MakeCrudApi extends Command
     {
         $modelDir = substr(str_replace('/', '\\', $this->dir), 0, -1);
         $content = str_replace(
-            ['{{modelName}}', '{{modelDir}}', '{{rules}}'],
-            [$this->name, $modelDir, $this->getAllRules()],
+            ['{{modelName}}', '{{modelDir}}', '{{rules}}', '{{modelNamespace}}'],
+            [$this->name, $modelDir, $this->getAllRules(), ucfirst(config('crud-api.request_basepath'))],
             file_get_contents($this->stubsPath . 'Request.stub')
         );
 
@@ -138,8 +138,8 @@ class MakeCrudApi extends Command
     {
         $modelDir = substr(str_replace('/', '\\', $this->dir), 0, -1);
         $content = str_replace(
-            ['{{modelName}}', '{{modelDir}}', '{{columns}}'],
-            [$this->name, $modelDir, $this->getAllResourceColumns()],
+            ['{{modelName}}', '{{modelDir}}', '{{columns}}', '{{modelNamespace}}'],
+            [$this->name, $modelDir, $this->getAllResourceColumns(), ucfirst(config('crud-api.resource_basepath'))],
             file_get_contents($this->stubsPath . 'Resource.stub')
         );
 

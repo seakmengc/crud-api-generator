@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Policies\{{modelDir}};
+namespace {{modelNamespace}}\{{modelDir}};
 
-use App\Models\{{modelDir}}\{{modelName}};
 use Illuminate\Auth\Access\HandlesAuthorization;
-use App\Models\Users\User;
 
 class {{modelName}}Policy
 {
