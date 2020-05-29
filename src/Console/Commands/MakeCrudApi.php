@@ -81,7 +81,7 @@ class MakeCrudApi extends Command
 
         $dir = config('crud-api.model_basepath') . $this->dir;
 
-        $this->generate($dir, $content, 'Model');
+        $this->generate($dir, $content);
 
         $this->line("<fg=green>Model generated:\n{$dir}{$this->name}.php</>\n");
     }
@@ -150,7 +150,7 @@ class MakeCrudApi extends Command
         $this->line("<fg=green>Resource generated:\n{$dir}{$this->name}.php</>\n");
     }
 
-    private function generate($fullDirPath, $content, $append)
+    private function generate($fullDirPath, $content, $append = '')
     {
         if (file_exists($fullDirPath . $this->name . '.php'))
             throw new FileExistsException();
