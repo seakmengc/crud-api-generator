@@ -1,18 +1,8 @@
 <?php
 
-namespace {{modelNamespace}}\{{modelDir}};
+namespace {{modelNamespace}};
 
 use App\Http\Controllers\Controller;
-
-use App\Models\{{modelDir}}\{{modelName}};
-use App\Http\Requests\{{modelDir}}\{{modelName}}Request;
-use App\Http\Resources\{{modelDir}}\{{modelName}}Resource;
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Response;
 
 class {{modelName}}Controller extends Controller
 {

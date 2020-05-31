@@ -1,6 +1,6 @@
 <?php
 
-namespace {{modelNamespace}}\{{modelDir}};
+namespace {{modelNamespace}};
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;

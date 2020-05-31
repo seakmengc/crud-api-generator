@@ -24,8 +24,11 @@ class MakeCrudApi extends Command
     protected $description = 'Generate api crud based on table. Note: should have table in advance.';
 
     protected $tableInfo;
+    
     protected $stubsPath;
+
     protected $name;
+
     protected $dir;
 
     /**
@@ -39,7 +42,7 @@ class MakeCrudApi extends Command
 
         $this->stubsPath = resource_path('stubs/crud-api/');
 
-        DB::connection()->getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
+        // DB::connection()->getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
     }
 
     /**
@@ -50,7 +53,10 @@ class MakeCrudApi extends Command
     public function handle()
     {
         $this->name = last(explode('/', $this->argument('name')));
-        $this->dir = substr($this->argument('name'), 0, strrpos($this->argument('name'), '/') + 1);
+        if(strrpos($this->argument('name'), '/') === false)
+            $this->dir = '/';
+        else
+            $this->dir = substr($this->argument('name'), 0, strrpos($this->argument('name'), '/') + 1);
 
         $this->tableInfo = DB::select('describe ' . $this->ask('What is your table name?'));
 
