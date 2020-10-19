@@ -24,7 +24,7 @@ class MakeCrudApi extends Command
     protected $description = 'Generate api crud based on table. Note: should have table in advance.';
 
     protected $tableInfo;
-    
+
     protected $stubsPath;
 
     protected $name;
@@ -53,12 +53,14 @@ class MakeCrudApi extends Command
     public function handle()
     {
         $this->name = last(explode('/', $this->argument('name')));
-        if(strrpos($this->argument('name'), '/') === false)
+        if (strrpos($this->argument('name'), '/') === false)
             $this->dir = '/';
         else
             $this->dir = substr($this->argument('name'), 0, strrpos($this->argument('name'), '/') + 1);
 
         $this->tableInfo = DB::select('describe ' . $this->ask('What is your table name?'));
+
+        dd($this->tableInfo, $this->dir);
 
         if (Str::contains($this->option('options'), ['a', 'm']))
             $this->generateModel();
@@ -80,8 +82,8 @@ class MakeCrudApi extends Command
     {
         $modelDir = substr(str_replace('/', '\\', $this->dir), 0, -1);
         $content = str_replace(
-            ['{{modelDir}}', '{{modelName}}', '{{fillables}}', '{{modelNamespace}}'],
-            [$modelDir, $this->name, $this->getAllFillableFields(), str_replace('/', '\\', ucfirst(config('crud-api.model_basepath')))],
+            ['{{modelDir}}', '{{modelName}}', '{{fillables}}', '{{modelNamespace}}', '{{uses}}'],
+            [$modelDir, $this->name, $this->getAllFillableFields(), str_replace('/', '\\', ucfirst(config('crud-api.model_basepath'))), $this->getUses()],
             file_get_contents($this->stubsPath . 'Model.stub')
         );
 
@@ -241,6 +243,20 @@ class MakeCrudApi extends Command
         }
 
         return $rules;
+    }
+
+    /**
+     * get Use trait in model
+     *
+     * @return string
+     */
+    private function getUses()
+    {
+    }
+
+    private function trimArrayVarExport($str)
+    {
+        return '[' . substr($str, 8, -3) . ']';
     }
 
     // private function getModelsPath()

@@ -6,5 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class {{modelName}} extends Model
 {
+    {{uses}}
+
     protected $fillable = [{{fillables}}];
+
+    protected $casts = {{casts}};
+
+    public static function getQueryFilter()
+	{
+		return QueryBuilder::for(self::class)
+            ->allowedSorts({{$fillable}});
+	}
 }

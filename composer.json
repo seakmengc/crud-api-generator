@@ -21,6 +21,9 @@
             "providers": [
                 "Seakmengc\\CrudApiGenerator\\CrudApiGeneratorServiceProvider"
             ]
+        },
+        "branch-alias": {
+            "dev-master": "1.0"
         }
     }
 }

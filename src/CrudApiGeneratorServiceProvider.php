@@ -7,7 +7,6 @@ use Seakmengc\CrudApiGenerator\Console\Commands\MakeCrudApi;
 
 class CrudApiGeneratorServiceProvider extends ServiceProvider
 {
-
     public function boot()
     {
         if ($this->app->runningInConsole()) {
@@ -15,6 +14,7 @@ class CrudApiGeneratorServiceProvider extends ServiceProvider
                 MakeCrudApi::class
             ]);
         }
+
         $this->publishes([
             __DIR__ . '/config/crud-api.php' => config_path('crud-api.php')
         ], 'config');
