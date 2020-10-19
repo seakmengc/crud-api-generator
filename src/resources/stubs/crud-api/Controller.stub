@@ -1,50 +1,84 @@
 <?php
 
-namespace {{modelNamespace}};
+namespace {{controllerNamespace}};
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\ApiController;
+use App\Http\Requests\PaginationRequest;
+use App\Services\Helpers\LimitPagination;
+use {{resourceNamespace}};
+use {{modelNamespace}};
 
-class {{modelName}}Controller extends Controller
+class {{modelName}}Controller extends ApiController
 {
-    public function index()
+    public function index(PaginationRequest $request, LimitPagination $limitPagination)
     {
-        // $this->authorize("viewAny", {{modelName}}::class);
-        //
+        $this->authorize('viewAny', {{modelName}}::class);
+
+        ${{modelCamelCaseName}} = $limitPagination->handle({{modelName}}::getQueryFilter(), $request);
+
+        return $this->okWithData({{modelName}}Resource::collection(${{modelCamelCaseName}}, true));
+    }
+
+    public function create()
+    {
+        $this->authorize('getForCreate', {{modelName}}::class);
+
+        return $this->okWithData([
+            {{getForCreate}}
+        ]);
     }
 
     public function store({{modelName}}Request $request)
     {
-        // $this->authorize("create", {{modelName}}::class);
-        //
+        $this->authorize('create', {{modelName}}::class);
+        
+        ${{modelCamelCaseName}} = {{modelName}}::create($request->validated());
+
+        return $this->created(new {{modelName}}Resource(${{modelCamelCaseName}}));
     }
 
     public function show({{modelName}} ${{modelCamelCaseName}})
     {
-        // $this->authorize("view", {{modelName}}::class);
-        //
+        $this->authorize('view', ${{modelCamelCaseName}});
+        
+        return $this->okWithData(new {{modelName}}Resource(${{modelCamelCaseName}}));
     }
 
-    public function update({{modelName}}Request $request,{{modelName}} ${{modelCamelCaseName}})
+    public function update({{modelName}}Request $request, {{modelName}} ${{modelCamelCaseName}})
     {
-        // $this->authorize("update", {{modelName}}::class);
-        //
+        $this->authorize('update', ${{modelCamelCaseName}});
+        
+        ${{modelCamelCaseName}}->update($request->validated());
+
+        return $this->updated(new {{modelName}}Resource(${{modelCamelCaseName}}));
     }
 
     public function destroy({{modelName}} ${{modelCamelCaseName}})
     {
-        // $this->authorize("delete", {{modelName}}::class);
-        //
+        $this->authorize('delete', ${{modelCamelCaseName}});
+        
+        ${{modelCamelCaseName}}->delete();
+
+        return $this->deleted();
     }
 
-    public function restore($id)
+    // only super admin can access
+    public function restore({{modelName}} ${{modelCamelCaseName}})
     {
-        // only super admin can access, and check with middleware at the __construct function
-        //
+        $this->authorize('delete', ${{modelCamelCaseName}});
+        
+        ${{modelCamelCaseName}}->restore();
+
+        return $this->restored();
     }
 
-    public function forceDestroy($id)
+    // only super admin can access
+    public function forceDestroy({{modelName}} ${{modelCamelCaseName}})
     {
-        // only super admin can access, and check with middleware at the __construct function
-        //
+        $this->authorize('forceDelete', ${{modelCamelCaseName}});
+        
+        ${{modelCamelCaseName}}->forceDelete();
+
+        return $this->forceDeleted();
     }
 }

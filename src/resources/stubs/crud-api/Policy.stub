@@ -3,6 +3,7 @@
 namespace {{modelNamespace}};
 
 use Illuminate\Auth\Access\HandlesAuthorization;
+use App\Traits\HasCrudPolicy;
 
 class {{modelName}}Policy
 {

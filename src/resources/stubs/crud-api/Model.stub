@@ -3,6 +3,9 @@
 namespace {{modelNamespace}};
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class {{modelName}} extends Model
 {
@@ -12,9 +15,43 @@ class {{modelName}} extends Model
 
     protected $casts = {{casts}};
 
+    //accessor-mutator
+
+    //relations
+    {{belongTo}}
+
+    //methods
+    public function getForSearch()
+	{
+        //TODO: change field
+		return [
+            'id' => $this->data,
+            'data' => $this->field
+        ];
+	}
+
+    //static methods
+    public static function getForCreate()
+	{
+        //TODO: change field
+		return self::get()->map(fn ($model) => $model->getForSearch());
+	}
+
+    public static function search($query = null)
+	{
+		$models = QueryBuilder::for($query ?? self::query())
+			->allowedFilters([
+                //
+			])->limit(10)->get();
+		// $models->loadMissing();
+
+		return $models->map(fn ($model) => $model->getForSearch());
+	}
+
     public static function getQueryFilter()
 	{
 		return QueryBuilder::for(self::class)
-            ->allowedSorts({{$fillable}});
+            ->allowedSorts({{sorts}})
+            ->orderByDesc('id');
 	}
 }
