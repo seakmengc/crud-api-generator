@@ -54,13 +54,11 @@ class MakeCrudApi extends Command
     {
         $this->name = last(explode('/', $this->argument('name')));
         if (strrpos($this->argument('name'), '/') === false)
-            $this->dir = '/';
+            $this->dir = '';
         else
-            $this->dir = substr($this->argument('name'), 0, strrpos($this->argument('name'), '/') + 1);
+            $this->dir = substr($this->argument('name'), 0, strrpos($this->argument('name'), '/'));
 
         $this->tableInfo = DB::select('describe ' . $this->ask('What is your table name?'));
-
-        dd($this->tableInfo, $this->dir);
 
         if (Str::contains($this->option('options'), ['a', 'm']))
             $this->generateModel();
@@ -80,10 +78,9 @@ class MakeCrudApi extends Command
 
     private function generateModel()
     {
-        $modelDir = substr(str_replace('/', '\\', $this->dir), 0, -1);
         $content = str_replace(
-            ['{{modelDir}}', '{{modelName}}', '{{fillables}}', '{{modelNamespace}}', '{{uses}}'],
-            [$modelDir, $this->name, $this->getAllFillableFields(), str_replace('/', '\\', ucfirst(config('crud-api.model_basepath'))), $this->getUses()],
+            ['{{modelName}}', '{{fillables}}', '{{modelNamespace}}', '{{uses}}', '{{casts}}', '{{sorts}}', '{{belongTo}}'],
+            [$this->name, $this->getAllFillableFields(), $this->getNamespace('model'), $this->getUses(), $this->getCasts(), $this->getSorts(), $this->getBelongTo()],
             file_get_contents($this->stubsPath . 'Model.stub')
         );
 
@@ -91,15 +88,14 @@ class MakeCrudApi extends Command
 
         $this->generate($dir, $content);
 
-        $this->line("<fg=green>Model generated:\n{$dir}{$this->name}.php</>\n");
+        $this->line("<fg=green>Model generated:\n{$dir}/{$this->name}.php</>\n");
     }
 
     private function generateController()
     {
-        $modelDir = substr(str_replace('/', '\\', $this->dir), 0, -1);
         $content = str_replace(
-            ['{{modelName}}', '{{modelCamelCaseName}}', '{{modelDir}}', '{{modelNamespace}}'],
-            [$this->name, Str::camel($this->name), $modelDir, str_replace('/', '\\', ucfirst(config('crud-api.controller_basepath')))],
+            ['{{modelName}}', '{{modelCamelCaseName}}', '{{controllerNamespace}}', '{{getForCreate}}', '{{resourceNamespace}}', '{{modelNamespace}}'],
+            [$this->name, Str::camel($this->name), $this->getNamespace('controller'), $this->getGetForCreateRelations(), $this->getNamespace('resource', true), $this->getNamespace('model', true)],
             file_get_contents($this->stubsPath . 'Controller.stub')
         );
 
@@ -107,15 +103,14 @@ class MakeCrudApi extends Command
 
         $this->generate($dir, $content, 'Controller');
 
-        $this->line("<fg=green>Controller generated:\n{$dir}{$this->name}Controller.php</>\n");
+        $this->line("<fg=green>Controller generated:\n{$dir}/{$this->name}Controller.php</>\n");
     }
 
     private function generatePolicy()
     {
-        $modelDir = substr(str_replace('/', '\\', $this->dir), 0, -1);
         $content = str_replace(
-            ['{{modelName}}', '{{modelCamelCaseName}}', '{{modelDir}}', '{{modelNamespace}}'],
-            [$this->name, Str::camel($this->name), $modelDir, str_replace('/', '\\', ucfirst(config('crud-api.policy_basepath')))],
+            ['{{modelName}}', '{{modelCamelCaseName}}', '{{modelNamespace}}'],
+            [$this->name, Str::camel($this->name), $this->getNamespace('policy')],
             file_get_contents($this->stubsPath . 'Policy.stub')
         );
 
@@ -123,15 +118,14 @@ class MakeCrudApi extends Command
 
         $this->generate($dir, $content, 'Policy');
 
-        $this->line("<fg=green>Policy generated:\n{$dir}{$this->name}Policy.php</>\n");
+        $this->line("<fg=green>Policy generated:\n{$dir}/{$this->name}Policy.php</>\n");
     }
 
     private function generateFormRequest()
     {
-        $modelDir = substr(str_replace('/', '\\', $this->dir), 0, -1);
         $content = str_replace(
-            ['{{modelName}}', '{{modelDir}}', '{{rules}}', '{{modelNamespace}}'],
-            [$this->name, $modelDir, $this->getAllRules(), str_replace('/', '\\', ucfirst(config('crud-api.request_basepath')))],
+            ['{{modelName}}', '{{rules}}', '{{modelNamespace}}'],
+            [$this->name, $this->getAllRules(), $this->getNamespace('request')],
             file_get_contents($this->stubsPath . 'Request.stub')
         );
 
@@ -139,15 +133,14 @@ class MakeCrudApi extends Command
 
         $this->generate($dir, $content, 'Request');
 
-        $this->line("<fg=green>Form request generated:\n{$dir}{$this->name}Request.php</>\n");
+        $this->line("<fg=green>Form request generated:\n{$dir}/{$this->name}Request.php</>\n");
     }
 
     private function generateResource()
     {
-        $modelDir = substr(str_replace('/', '\\', $this->dir), 0, -1);
         $content = str_replace(
-            ['{{modelName}}', '{{modelDir}}', '{{columns}}', '{{modelNamespace}}'],
-            [$this->name, $modelDir, $this->getAllResourceColumns(), str_replace('/', '\\', ucfirst(config('crud-api.resource_basepath')))],
+            ['{{modelName}}', '{{columns}}', '{{modelNamespace}}'],
+            [$this->name, $this->getAllResourceColumns(), $this->getNamespace('resource')],
             file_get_contents($this->stubsPath . 'Resource.stub')
         );
 
@@ -155,26 +148,27 @@ class MakeCrudApi extends Command
 
         $this->generate($dir, $content, 'Resource');
 
-        $this->line("<fg=green>Resource generated:\n{$dir}{$this->name}Resource.php</>\n");
+        $this->line("<fg=green>Resource generated:\n{$dir}/{$this->name}Resource.php</>\n");
     }
 
     private function generate($fullDirPath, $content, $append = '')
     {
-        if (file_exists($fullDirPath . $this->name . '.php'))
+        $path = $fullDirPath . '/' . $this->name . $append . '.php';
+        if (file_exists($path))
             throw new FileExistsException();
 
         if (!file_exists($fullDirPath))
             mkdir($fullDirPath, 0777, true);
 
-        file_put_contents($fullDirPath . $this->name . $append . '.php', $content);
+        file_put_contents($path, $content);
     }
 
     private function getAllFillableFields()
     {
         $format = '';
-        foreach ($this->tableInfo as $column) {
-            if (!in_array($column->Field, ['id', 'created_at', 'updated_at', 'deleted_at']))
-                $format .= "'$column->Field',";
+        foreach ($this->filterFields(['id', 'created_at', 'updated_at', 'deleted_at']) as $column) {
+            if (!in_array($column, ['id', 'created_at', 'updated_at', 'deleted_at']))
+                $format .= "'$column',";
         }
 
         return $format;
@@ -183,9 +177,9 @@ class MakeCrudApi extends Command
     private function getAllResourceColumns(): string
     {
         $allColumns = [];
-        foreach ($this->tableInfo as $column) {
-            if (!in_array($column->Field, ['created_at', 'updated_at', 'deleted_at']))
-                $allColumns[$column->Field] = '$this->' . $column->Field;
+        foreach ($this->filterFields(['created_at', 'updated_at', 'deleted_at']) as $column) {
+            if (!in_array($column, ['created_at', 'updated_at', 'deleted_at']))
+                $allColumns[$column] = '$this->' . $column;
         }
 
         $format = '';
@@ -217,6 +211,9 @@ class MakeCrudApi extends Command
             $rules->add('required');
 
         $rules->add($this->getRulesByType($column->Type));
+
+        if (substr($column->Field, -3) === '_id')
+            $rules->add('exists:' . Str::plural(substr($column->Field, 0, -3)) . ',id,deleted_at,null');
 
         return $rules->flatten(1)->toArray();
     }
@@ -252,11 +249,91 @@ class MakeCrudApi extends Command
      */
     private function getUses()
     {
+        if (collect($this->tableInfo)->firstWhere('Field', 'deleted_at'))
+            return 'use SoftDeletes;';
     }
 
-    private function trimArrayVarExport($str)
+    private function getCasts()
     {
-        return '[' . substr($str, 8, -3) . ']';
+        $casts = [];
+        foreach ($this->tableInfo as $column) {
+            if (in_array($column->Field, ['created_at', 'updated_at', 'deleted_at']))
+                continue;
+
+            $mainType = explode(' ', $column->Type)[0];
+            if (Str::startsWith($mainType, ['tinyint', 'smallint', 'int', 'bigint']))
+                $casts[$column->Field] = 'integer';
+            elseif (Str::startsWith($mainType, 'json'))
+                $casts[$column->Field] = 'collect';
+            elseif (Str::startsWith($mainType, 'timestamp'))
+                $casts[$column->Field] = 'datetime';
+        }
+
+        return $this->trimArrayVarExport($casts);
+    }
+
+    private function getSorts()
+    {
+        $format = '';
+        foreach ($this->filterFields() as $column)
+            $format .= "'$column',";
+
+        return $format;
+    }
+
+    private function getBelongTo()
+    {
+        $format = '';
+        foreach ($this->filterFields(['id', 'created_at', 'deleted_at', 'updated_at']) as $column) {
+            if (substr($column, -3) === '_id') {
+                $camel = Str::camel(substr($column, 0, -3));
+                $studly = ucfirst($camel);
+                $format .= "public function {$camel}(): BelongsTo {
+                    return \$this->belongsTo({$studly}::class);
+                }
+                
+                ";
+            }
+        }
+
+        return $format;
+    }
+
+    private function getGetForCreateRelations()
+    {
+        $format = '';
+        foreach ($this->filterFields(['id', 'created_at', 'deleted_at', 'updated_at']) as $column) {
+            if (substr($column, -3) === '_id') {
+                $snake = substr($column, 0, -3);
+                $studly = Str::studly($snake);
+                $format .= "'{$snake}' => {$studly}::getForCreate()," . PHP_EOL;
+            }
+        }
+
+        return $format;
+    }
+
+    private function getNamespace($type, $append = false)
+    {
+        static $dir = null;
+        if (!$dir) $dir = str_replace('/', '\\', $this->dir);
+
+        $res = rtrim(str_replace('/', '\\', ucfirst(config("crud-api.{$type}_basepath"))) . $dir, '\\');
+        if ($append)
+            $res .= '\\' . $this->name . ($type === 'model' ? '' : ucfirst($type));
+
+        return $res;
+    }
+
+    private function trimArrayVarExport(array &$data)
+    {
+        return '[' . substr(var_export($data, true), 8, -3) . ']';
+    }
+
+    private function filterFields($without = [])
+    {
+        return collect($this->tableInfo)->pluck('Field')
+            ->filter(fn ($val) => !in_array($val, $without));
     }
 
     // private function getModelsPath()
