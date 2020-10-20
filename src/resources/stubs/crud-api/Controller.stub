@@ -2,7 +2,7 @@
 
 namespace {{controllerNamespace}};
 
-use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\Api\v1\ApiController;
 use App\Http\Requests\PaginationRequest;
 use App\Services\Helpers\LimitPagination;
 use {{resourceNamespace}};

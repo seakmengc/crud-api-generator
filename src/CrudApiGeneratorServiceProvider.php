@@ -19,9 +19,9 @@ class CrudApiGeneratorServiceProvider extends ServiceProvider
             __DIR__ . '/config/crud-api.php' => config_path('crud-api.php')
         ], 'config');
 
-        $this->publishes([
-            __DIR__ . '/resources' => resource_path(),
-        ], 'resource');
+        // $this->publishes([
+        //     __DIR__ . '/resources' => resource_path(),
+        // ], 'resource');
     }
 
     public function register()
