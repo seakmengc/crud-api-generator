@@ -40,7 +40,7 @@ class MakeCrudApi extends Command
     {
         parent::__construct();
 
-        $this->stubsPath = '../../../resources/stubs/crud-api/';
+        $this->stubsPath = __DIR__ . '/resources/stubs/crud-api/';
 
         // DB::connection()->getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
     }
@@ -59,6 +59,8 @@ class MakeCrudApi extends Command
             $this->dir = substr($this->argument('name'), 0, strrpos($this->argument('name'), '/'));
 
         $this->tableInfo = DB::select('describe ' . $this->ask('What is your table name?'));
+
+        dd($this->tableInfo);
 
         if (Str::contains($this->option('options'), ['a', 'm']))
             $this->generateModel();
@@ -177,9 +179,10 @@ class MakeCrudApi extends Command
     private function getAllResourceColumns(): string
     {
         $allColumns = [];
-        foreach ($this->filterFields(['created_at', 'updated_at', 'deleted_at']) as $column) {
-            if (!in_array($column, ['created_at', 'updated_at', 'deleted_at']))
-                $allColumns[$column] = '$this->' . $column;
+        foreach ($this->tableInfo as &$column) {
+            $allColumns[$column->Field] = '$this->' . $column->Field;
+            if ($this->colIs($column, 'timestamp'))
+                $allColumns[$column->Field . '_humans'] = '$this->' . $column->Field . '->diffForHumans()';
         }
 
         $format = '';
@@ -227,6 +230,7 @@ class MakeCrudApi extends Command
 
         $mainType = explode(' ', $type)[0];
         if (Str::startsWith($mainType, ['tinyint', 'smallint', 'int', 'bigint']))
+            // if($mainType === 'tinyint' and )
             $rules->add('integer');
         elseif (Str::startsWith($mainType, 'json'))
             $rules->add('json');
@@ -334,6 +338,11 @@ class MakeCrudApi extends Command
     {
         return collect($this->tableInfo)->pluck('Field')
             ->filter(fn ($val) => !in_array($val, $without));
+    }
+
+    private function colIs(&$column, $type): bool
+    {
+        return Str::startsWith(explode(' ', $column->Type)[0], $type);
     }
 
     // private function getModelsPath()
