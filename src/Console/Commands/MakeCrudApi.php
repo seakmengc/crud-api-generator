@@ -40,7 +40,8 @@ class MakeCrudApi extends Command
     {
         parent::__construct();
 
-        $this->stubsPath = __DIR__ . '/resources/stubs/crud-api/';
+        // $this->stubsPath = __DIR__ . '/resources/stubs/crud-api/';
+        $this->stubsPath = resource_path('/stubs/crud-api/');
 
         // DB::connection()->getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
     }
@@ -59,8 +60,6 @@ class MakeCrudApi extends Command
             $this->dir = substr($this->argument('name'), 0, strrpos($this->argument('name'), '/'));
 
         $this->tableInfo = DB::select('describe ' . $this->ask('What is your table name?'));
-
-        dd($this->tableInfo);
 
         if (Str::contains($this->option('options'), ['a', 'm']))
             $this->generateModel();
@@ -213,7 +212,7 @@ class MakeCrudApi extends Command
         if ($column->Null == 'NO')
             $rules->add('required');
 
-        $rules->add($this->getRulesByType($column->Type));
+        $rules->add($this->getRulesByType($column));
 
         if (substr($column->Field, -3) === '_id')
             $rules->add('exists:' . Str::plural(substr($column->Field, 0, -3)) . ',id,deleted_at,null');
@@ -224,14 +223,20 @@ class MakeCrudApi extends Command
     /**
      * currently does not support unsigned
      */
-    private function getRulesByType($type)
+    private function getRulesByType(&$column)
     {
         $rules = collect();
 
-        $mainType = explode(' ', $type)[0];
-        if (Str::startsWith($mainType, ['tinyint', 'smallint', 'int', 'bigint']))
-            // if($mainType === 'tinyint' and )
-            $rules->add('integer');
+        $mainType = explode(' ', $column->Type)[0];
+        if (Str::startsWith($mainType, ['tinyint', 'smallint', 'int', 'bigint'])) {
+            if ($mainType === 'tinyint') {
+                $field = Str::studly($column->Field);
+                $rules->add("enum_value:' . $field::class . ',false");
+                // $rules->add("enum_key:' . $field::class");
+            } else
+                $rules->add('integer');
+        } elseif (Str::startsWith($mainType, 'tinyint(1)'))
+            $rules->add('in:true,false');
         elseif (Str::startsWith($mainType, 'json'))
             $rules->add('json');
         elseif (Str::startsWith($mainType, 'enum')) {
