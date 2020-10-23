@@ -4,13 +4,13 @@ return [
     /**
      * Do not forget the trailing slash
      */
-    'model_basepath' => 'app/Models',
+    'model_basepath' => 'app/Models/',
 
-    'controller_basepath' => 'app/Http/Controllers/Api/v1',
+    'controller_basepath' => 'app/Http/Controllers/Api/v1/',
 
-    'resource_basepath' => 'app/Http/Resources',
+    'resource_basepath' => 'app/Http/Resources/',
 
-    'request_basepath' => 'app/Http/Requests',
+    'request_basepath' => 'app/Http/Requests/',
 
-    'policy_basepath' => 'app/Policies',
+    'policy_basepath' => 'app/Policies/',
 ];

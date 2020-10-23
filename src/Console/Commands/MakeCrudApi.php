@@ -41,7 +41,7 @@ class MakeCrudApi extends Command
         parent::__construct();
 
         // $this->stubsPath = __DIR__ . '/resources/stubs/crud-api/';
-        $this->stubsPath = resource_path('/stubs/crud-api') . '/';
+        $this->stubsPath = resource_path('/stubs/crud-api');
 
         // DB::connection()->getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
     }
@@ -82,7 +82,7 @@ class MakeCrudApi extends Command
         $content = str_replace(
             ['{{modelName}}', '{{fillables}}', '{{modelNamespace}}', '{{uses}}', '{{casts}}', '{{sorts}}', '{{belongTo}}'],
             [$this->name, $this->getAllFillableFields(), $this->getNamespace('model'), $this->getUses(), $this->getCasts(), $this->getSorts(), $this->getBelongTo()],
-            file_get_contents($this->stubsPath . 'Model.stub')
+            file_get_contents($this->stubsPath . '/Model.stub')
         );
 
         $dir = config('crud-api.model_basepath') . $this->dir;
@@ -97,7 +97,7 @@ class MakeCrudApi extends Command
         $content = str_replace(
             ['{{modelName}}', '{{modelCamelCaseName}}', '{{controllerNamespace}}', '{{getForCreate}}', '{{resourceNamespace}}', '{{modelNamespace}}'],
             [$this->name, Str::camel($this->name), $this->getNamespace('controller'), $this->getGetForCreateRelations(), $this->getNamespace('resource', true), $this->getNamespace('model', true)],
-            file_get_contents($this->stubsPath . 'Controller.stub')
+            file_get_contents($this->stubsPath . '/Controller.stub')
         );
 
         $dir = config('crud-api.controller_basepath') . $this->dir;
@@ -112,7 +112,7 @@ class MakeCrudApi extends Command
         $content = str_replace(
             ['{{modelName}}', '{{modelCamelCaseName}}', '{{modelNamespace}}'],
             [$this->name, Str::camel($this->name), $this->getNamespace('policy')],
-            file_get_contents($this->stubsPath . 'Policy.stub')
+            file_get_contents($this->stubsPath . '/Policy.stub')
         );
 
         $dir = config('crud-api.policy_basepath') . $this->dir;
@@ -127,7 +127,7 @@ class MakeCrudApi extends Command
         $content = str_replace(
             ['{{modelName}}', '{{rules}}', '{{modelNamespace}}'],
             [$this->name, $this->getAllRules(), $this->getNamespace('request')],
-            file_get_contents($this->stubsPath . 'Request.stub')
+            file_get_contents($this->stubsPath . '/Request.stub')
         );
 
         $dir = config('crud-api.request_basepath') . $this->dir;
@@ -142,7 +142,7 @@ class MakeCrudApi extends Command
         $content = str_replace(
             ['{{modelName}}', '{{columns}}', '{{modelNamespace}}'],
             [$this->name, $this->getAllResourceColumns(), $this->getNamespace('resource')],
-            file_get_contents($this->stubsPath . 'Resource.stub')
+            file_get_contents($this->stubsPath . '/Resource.stub')
         );
 
         $dir = config('crud-api.resource_basepath') . $this->dir;
@@ -154,7 +154,7 @@ class MakeCrudApi extends Command
 
     private function generate($fullDirPath, $content, $append = '')
     {
-        $path = $fullDirPath . '/' . $this->name . $append . '.php';
+        $path = Str::finish($fullDirPath, '/') . $this->name . $append . '.php';
         if (file_exists($path))
             throw new FileExistsException();
 
